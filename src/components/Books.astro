@@ -1,45 +1,42 @@
 ---
-// src/components/BookCard.astro
-const { title, subject, coverUrl, grade } = Astro.props;
+import "tailwindcss/index.css";
+import BookCard from "../components/BookCard.astro";
+
+const books = [
+  {
+    title: "Astronomia: Światła Wszechświata",
+    subtitle: "Gwiazdy, Galaktyki i Wszechświat",
+    subject: "Astronomia",
+    grade: "3",
+    bookType: "Podręcznik",
+    frontPageImageSrc:
+      "https://www.nasa.gov/wp-content/uploads/2015/10/oct_1_2015_flare.jpg",
+  },
+];
 ---
 
 <div
-  class="group relative bg-white rounded-2xl shadow-md hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full cursor-pointer"
+  class="min-h-screen bg-slate-50 py-12 px-4 text-slate-800 font-sans antialiased"
 >
-  <!-- Górny pasek z przedmiotem (styl podręcznika) -->
-  <div
-    class="absolute top-3 left-3 z-10 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm"
-  >
-    {subject}
-  </div>
-
-  <!-- Okładka książki -->
-  <div
-    class="aspect-[3/4] w-full bg-gray-100 overflow-hidden flex items-center justify-center"
-  >
-    <img
-      src={coverUrl}
-      alt={title}
-      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-    />
-  </div>
-
-  <!-- Informacje o książce -->
-  <div class="p-5 flex flex-col flex-grow">
-    <span class="text-xs text-gray-400 font-medium mb-1">Klasa {grade}</span>
-    <h3
-      class="text-lg font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors"
+  <div class="max-w-7xl mx-auto">
+    <header
+      class="mb-12 text-center md:text-left border-b border-slate-200 pb-6"
     >
-      {title}
-    </h3>
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase">
+        Multibook <span
+          class="bg-linear-to-r from-blue-600 to-fuchsia-600 bg-clip-text text-transparent"
+          >e-Space Era</span
+        >
+      </h1>
+      <p class="text-slate-500 mt-1 font-medium">
+        Cyfrowy system edukacyjny publikacji nowej generacji.
+      </p>
+    </header>
 
-    <!-- Przycisk akcji na dole -->
-    <div class="mt-auto pt-4">
-      <button
-        class="w-full bg-gray-50 group-hover:bg-blue-600 text-gray-700 group-hover:text-white text-sm font-semibold py-2.5 px-4 rounded-xl transition-colors duration-300 text-center block"
-      >
-        Otwórz e-book
-      </button>
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+    >
+      {books.map((book) => <BookCard data={book} />)}
     </div>
   </div>
 </div>

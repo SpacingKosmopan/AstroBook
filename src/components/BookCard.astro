@@ -1,0 +1,64 @@
+---
+const { data } = Astro.props;
+---
+
+<div
+  class="group relative bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 flex flex-col h-full shadow-sm hover:shadow-xl hover:border-fuchsia-500/30 transform hover:-translate-y-1.5 cursor-pointer"
+>
+  <div
+    class="absolute -inset-px bg-linear-to-r from-blue-500 via-purple-500 to-fuchsia-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-[2px] -z-10"
+  >
+  </div>
+
+  <div
+    class="aspect-3/4 w-full bg-slate-100 overflow-hidden relative border-b border-slate-100"
+  >
+    <img
+      src={data.frontPageImageSrc || "https://placehold.co"}
+      alt={`${data.title} okładka`}
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+    />
+  </div>
+
+  <div class="p-5 flex flex-col grow bg-white">
+    <div
+      class="flex items-center justify-between text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider"
+    >
+      <span>Klasa {data.grade}</span>
+
+      <span class="group-hover:text-fuchsia-600 transition-colors font-mono"
+        >{data.subject || "Fizyka"}</span
+      >
+    </div>
+
+    <h2
+      class="text-lg font-bold text-slate-800 tracking-tight line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 mb-5"
+    >
+      {data.title}
+    </h2>
+
+    {
+      data.subtitle && (
+        <p class="text-sm text-slate-500 mt-1 font-normal line-clamp-2 leading-relaxed">
+          {data.subtitle}
+        </p>
+      )
+    }
+
+    <div class="text-right mt-1 mb-4">
+      <span
+        class="text-[11px] font-medium text-slate-400 tracking-wide uppercase"
+      >
+        {data.bookType || "Podręcznik"}
+      </span>
+    </div>
+
+    <div class="mt-auto">
+      <div
+        class="w-full bg-slate-50 group-hover:bg-linear-to-r group-hover:from-blue-600 group-hover:to-fuchsia-600 text-slate-600 group-hover:text-white border border-slate-200 group-hover:border-transparent text-xs font-bold uppercase tracking-widest py-3 px-4 rounded-xl transition-all duration-300 text-center block shadow-sm group-hover:shadow-[0_4px_12px_rgba(217,70,239,0.25)]"
+      >
+        Uruchom
+      </div>
+    </div>
+  </div>
+</div>
