@@ -2,17 +2,8 @@
 import "tailwindcss/index.css";
 import BookCard from "../components/BookCard.astro";
 
-const books = [
-  {
-    title: "Astronomia: Światła Wszechświata",
-    subtitle: "Gwiazdy, Galaktyki i Wszechświat",
-    subject: "Astronomia",
-    grade: "3",
-    bookType: "Podręcznik",
-    frontPageImageSrc:
-      "https://www.nasa.gov/wp-content/uploads/2015/10/oct_1_2015_flare.jpg",
-  },
-];
+import { getCollection } from "astro:content";
+const books = await getCollection("books");
 ---
 
 <div
