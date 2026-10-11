@@ -1,0 +1,460 @@
+
+/* =========================================================
+   PODRĘCZNIK — UKŁAD STRON
+   Plik: src/styles/markdown_book.css
+   ========================================================= */
+
+:root {
+  --book-paper: #fffefa;
+  --book-ink: #263449;
+  --book-heading: #192d48;
+  --book-muted: #62748a;
+  --book-accent: #087e8b;
+  --book-border: #e2dfd7;
+
+  --book-definition-bg: #edf7f7;
+  --book-curiosity-bg: #f2effb;
+  --book-remember-bg: #fff6df;
+  --book-example-bg: #f0f4fa;
+}
+
+/* =========================================================
+   ROZKŁADÓWKA
+   ========================================================= */
+
+.book-spread {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  max-width: 800px;
+  margin-inline: auto;
+  align-items: start;
+}
+
+/* =========================================================
+   POJEDYNCZA STRONA
+   ========================================================= */
+
+.book-page {
+  box-sizing: border-box;
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 148 / 210;
+  padding: 8mm 7mm 14mm;
+
+  background: var(--book-paper);
+  border: 1px solid var(--book-border);
+  box-shadow: 0 3px 12px rgb(25 45 72 / 8%);
+
+  color: var(--book-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 10pt;
+  line-height: 1.6;
+
+  overflow-wrap: anywhere;
+  overflow-y: auto;
+}
+
+/* Pusta prawa strona na końcu książki */
+
+.book-page-empty {
+  background: #faf9f5;
+}
+
+/* =========================================================
+   TYPOGRAFIA TREŚCI MARKDOWN
+   ========================================================= */
+
+/* Nadpisanie bazowych stylów Tailwind Typography */
+
+.book-page.prose {
+  max-width: none;
+  color: var(--book-ink);
+  font-size: 10pt;
+  line-height: 1.6;
+}
+
+.book-page.prose p,
+.book-page p {
+  margin: 0 0 3.5mm;
+  color: var(--book-ink);
+  line-height: 1.6;
+}
+
+.book-page strong {
+  color: var(--book-heading);
+  font-weight: 700;
+}
+
+.book-page em {
+  font-style: italic;
+}
+
+.book-page a {
+  color: var(--book-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.book-page ul,
+.book-page ol {
+  margin: 2mm 0 4mm;
+  padding-left: 6mm;
+}
+
+.book-page ul {
+  list-style: disc;
+}
+
+.book-page ol {
+  list-style: decimal;
+}
+
+.book-page li {
+  margin: 1mm 0;
+  padding-left: 1mm;
+}
+
+.book-page li::marker {
+  color: var(--book-accent);
+}
+
+.book-page blockquote {
+  margin: 4mm 0;
+  padding: 2mm 4mm;
+  border-left: 2px solid var(--book-accent);
+  color: var(--book-muted);
+  font-style: italic;
+}
+
+.book-page hr {
+  margin: 5mm 0;
+  border: 0;
+  border-top: 1px solid var(--book-border);
+}
+
+/* =========================================================
+   OTWARCIE ROZDZIAŁU
+   ========================================================= */
+
+.book-page .chapter-opener {
+  margin-bottom: 8mm;
+  padding: 6mm 0 5mm;
+  border-bottom: 2px solid var(--book-accent);
+}
+
+.book-page .chapter-kicker {
+  margin: 0 0 3mm;
+  color: var(--book-accent);
+  font-family: Inter, Arial, sans-serif;
+  font-size: 8pt;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.book-page .chapter-opener h1 {
+  margin: 0 0 4mm;
+  padding: 0;
+  border: 0;
+  color: var(--book-heading);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25pt;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.book-page .chapter-lead {
+  margin: 0;
+  color: var(--book-muted);
+  font-size: 11pt;
+  line-height: 1.6;
+}
+
+/* Zwykły nagłówek H1, poza otwarciem rozdziału */
+
+.book-page h1 {
+  margin: 0 0 5mm;
+  color: var(--book-heading);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22pt;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+/* =========================================================
+   PODROZDZIAŁY
+   ========================================================= */
+
+.book-page h2 {
+  margin: 7mm 0 3mm;
+  padding-left: 3mm;
+  border-left: 3px solid var(--book-accent);
+  color: var(--book-heading);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15pt;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.book-page h3 {
+  margin: 5mm 0 2mm;
+  color: var(--book-accent);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 11pt;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.book-page h4 {
+  margin: 4mm 0 2mm;
+  color: var(--book-heading);
+  font-size: 10pt;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+/* =========================================================
+   BOX INFORMACYJNY — WSPÓLNE STYLE
+   ========================================================= */
+
+.book-page .textbook-box {
+  margin: 5mm 0;
+  padding: 4mm;
+  border: 1px solid #dce5eb;
+  border-left: 3px solid var(--book-accent);
+  border-radius: 1.5mm;
+  font-size: 9pt;
+  line-height: 1.6;
+
+  break-inside: avoid;
+  overflow-wrap: anywhere;
+}
+
+.book-page .textbook-box p {
+  margin: 0 0 2.5mm;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.book-page .textbook-box p:last-child {
+  margin-bottom: 0;
+}
+
+.book-page .textbook-box ul,
+.book-page .textbook-box ol {
+  margin-bottom: 2mm;
+}
+
+.book-page .box-label {
+  margin: 0 0 2mm;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 7.5pt;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   DEFINICJA
+   ========================================================= */
+
+.book-page .definition {
+  background: var(--book-definition-bg);
+  border-left-color: #087e8b;
+}
+
+.book-page .definition .box-label {
+  color: #087e8b;
+}
+
+/* =========================================================
+   CIEKAWOSTKA
+   ========================================================= */
+
+.book-page .curiosity {
+  background: var(--book-curiosity-bg);
+  border-left-color: #7861b2;
+}
+
+.book-page .curiosity .box-label {
+  color: #6950a3;
+}
+
+/* =========================================================
+   ZAPAMIĘTAJ
+   ========================================================= */
+
+.book-page .remember {
+  background: var(--book-remember-bg);
+  border-left-color: #d49a24;
+}
+
+.book-page .remember .box-label {
+  color: #916515;
+}
+
+/* =========================================================
+   PRZYKŁAD
+   ========================================================= */
+
+.book-page .example {
+  background: var(--book-example-bg);
+  border-left-color: #355f98;
+}
+
+.book-page .example .box-label {
+  color: #355f98;
+}
+
+/* =========================================================
+   OBRAZY I PODPISY
+   ========================================================= */
+
+.book-page img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 4mm auto;
+  border-radius: 1mm;
+}
+
+.book-page figure {
+  margin: 4mm 0;
+  break-inside: avoid;
+}
+
+.book-page figcaption {
+  margin-top: 2mm;
+  color: var(--book-muted);
+  font-size: 8pt;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* =========================================================
+   KOD I WZORY
+   ========================================================= */
+
+.book-page code {
+  padding: 0.15em 0.3em;
+  border-radius: 2px;
+  background: #eef1f5;
+  color: #243b53;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.88em;
+}
+
+.book-page pre {
+  max-width: 100%;
+  margin: 4mm 0;
+  padding: 3mm;
+  overflow-x: auto;
+  border: 1px solid var(--book-border);
+  border-radius: 1mm;
+  background: #f5f7fa;
+  font-size: 8pt;
+  line-height: 1.45;
+}
+
+.book-page pre code {
+  padding: 0;
+  background: transparent;
+}
+
+/* =========================================================
+   TABELE
+   ========================================================= */
+
+.book-page table {
+  width: 100%;
+  margin: 4mm 0;
+  border-collapse: collapse;
+  font-size: 8.5pt;
+  line-height: 1.4;
+}
+
+.book-page th,
+.book-page td {
+  padding: 2mm;
+  border: 1px solid #dce5eb;
+  text-align: left;
+  vertical-align: top;
+}
+
+.book-page th {
+  background: #edf3f7;
+  color: var(--book-heading);
+  font-weight: 700;
+}
+
+/* =========================================================
+   NUMERY STRON
+   ========================================================= */
+
+.book-page .page-number {
+  position: absolute;
+  bottom: 4mm;
+  width: auto;
+  margin: 0;
+  color: #94a3b8;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 8pt;
+  line-height: 1;
+}
+
+.book-page .left-page-number {
+  left: 7mm;
+  right: auto;
+  text-align: left;
+}
+
+.book-page .right-page-number {
+  right: 7mm;
+  left: auto;
+  text-align: right;
+}
+
+/* =========================================================
+   RESPONSYWNOŚĆ
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .book-spread {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    max-width: 420px;
+  }
+
+  .book-page {
+    padding: 8mm 7mm 14mm;
+  }
+
+  .book-page .chapter-opener h1 {
+    font-size: 22pt;
+  }
+
+  .book-page h2 {
+    font-size: 14pt;
+  }
+}
+
+/* =========================================================
+   DRUK
+   ========================================================= */
+
+@media print {
+  .book-spread {
+    max-width: none;
+    gap: 0;
+  }
+
+  .book-page {
+    box-shadow: none;
+    overflow: visible;
+    break-inside: avoid;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

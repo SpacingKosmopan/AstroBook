@@ -1,0 +1,273 @@
+---
+import { getCollection } from "astro:content";
+import { Marked } from "marked";
+import "tailwindcss/index.css";
+import "../../../styles/markdown_book.css";
+
+export async function getStaticPaths() {
+  const books = await getCollection("books");
+
+  return books.flatMap((book) => {
+    if (book.body === undefined) {
+      throw new Error(`Brak treści książki: ${book.id}`);
+    }
+
+    const pages = book.body.split(/^\s*---\s*$/m);
+    const totalPages = Math.ceil(pages.length / 2);
+
+    return Array.from({ length: totalPages }, (_, index) => {
+      const currentPage = index + 1;
+
+      return {
+        params: {
+          slug: book.id,
+          page: currentPage.toString(),
+        },
+        props: {
+          book,
+          leftContent: pages[index * 2],
+          rightContent: pages[index * 2 + 1] ?? null,
+          currentPage,
+          totalPages,
+          leftPhysicalPage: index * 2 + 1,
+          rightPhysicalPage: index * 2 + 2,
+        },
+      };
+    });
+  });
+}
+
+const {
+  book,
+  leftContent,
+  rightContent,
+  currentPage,
+  totalPages,
+  leftPhysicalPage,
+  rightPhysicalPage,
+} = Astro.props;
+
+const { slug } = Astro.params;
+
+const marked = new Marked();
+const leftHtml = marked.parse(leftContent);
+const rightHtml = rightContent ? marked.parse(rightContent) : null;
+
+const prevPageUrl =
+  currentPage > 1 ? `/books/${slug}/${currentPage - 1}` : null;
+
+const nextPageUrl =
+  currentPage < totalPages ? `/books/${slug}/${currentPage + 1}` : null;
+
+const pageNumbers = Array.from(
+  new Set(
+    [1, totalPages, currentPage - 1, currentPage, currentPage + 1].filter(
+      (page) => page >= 1 && page <= totalPages,
+    ),
+  ),
+).sort((a, b) => a - b);
+
+const paginationItems: (number | "...")[] = [];
+
+for (const page of pageNumbers) {
+  const previous = paginationItems[paginationItems.length - 1];
+
+  if (typeof previous === "number" && page - previous > 1) {
+    paginationItems.push("...");
+  }
+
+  paginationItems.push(page);
+}
+---
+
+---
+
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{book.data.title} Str.{currentPage}</title></head
+  >
+
+  <body class="bg-slate-50 text-slate-800 antialiased">
+    <div class="max-w-3xl mx-auto px-4">
+      <header class="mb-5 flex items-center gap-4">
+        <a
+          href="/"
+          class="shrink-0 rounded border border-slate-300 bg-white
+           px-3 py-1.5 text-sm text-slate-600
+           hover:border-blue-400 hover:text-blue-600"
+        >
+          ← Powrót
+        </a>
+
+        <div class="min-w-0">
+          <h1 class="truncate text-lg font-semibold text-slate-800">
+            {book.data.title}
+          </h1>
+
+          {
+            book.data.subtitle && (
+              <p class="truncate text-sm text-slate-500">
+                {book.data.subtitle}
+              </p>
+            )
+          }
+        </div>
+      </header>
+
+      <nav
+        aria-label="Nawigacja po stronach"
+        class="mt-3 flex flex-wrap items-center justify-center gap-2 text-sm"
+      >
+        <a
+          href={`/books/${slug}/1`}
+          aria-label="Pierwsza rozkładówka"
+          class="px-1 text-slate-500 hover:text-blue-600">1</a
+        >
+
+        <a
+          href={prevPageUrl ?? "#"}
+          aria-label="Poprzednia rozkładówka"
+          class:list={[
+            "px-1 text-slate-500 hover:text-blue-600",
+            !prevPageUrl && "pointer-events-none opacity-30",
+          ]}>←</a
+        >
+
+        {
+          paginationItems.map((item) =>
+            item === "..." ? (
+              <span class="text-slate-400">…</span>
+            ) : item === 1 || item === totalPages ? null : (
+              <a
+                href={`/books/${slug}/${item}`}
+                aria-current={item === currentPage ? "page" : undefined}
+                class:list={[
+                  "px-1 text-xs hover:text-blue-600",
+                  item === currentPage
+                    ? "font-bold text-blue-600 underline underline-offset-4"
+                    : "text-slate-600",
+                ]}
+              >
+                {item}
+              </a>
+            ),
+          )
+        }
+
+        <a
+          href={nextPageUrl ?? "#"}
+          aria-label="Następna rozkładówka"
+          class:list={[
+            "px-1 text-slate-500 hover:text-blue-600",
+            !nextPageUrl && "pointer-events-none opacity-30",
+          ]}>→</a
+        >
+
+        <a
+          href={`/books/${slug}/${totalPages}`}
+          aria-label="Ostatnia rozkładówka"
+          class="px-1 text-slate-500 hover:text-blue-600">{totalPages}</a
+        >
+      </nav>
+
+      <!-- parsed HTML render -->
+
+      <main class="book-spread mt-5">
+        <article class="book-page prose prose-slate max-w-none">
+          <div set:html={leftHtml} />
+          <footer class="page-number left-page-number">
+            {leftPhysicalPage}
+          </footer>
+        </article>
+
+        {
+          rightHtml !== null ? (
+            <article class="book-page prose prose-slate max-w-none">
+              <div set:html={rightHtml} />
+              <footer class="page-number right-page-number">
+                {rightPhysicalPage}
+              </footer>
+            </article>
+          ) : (
+            <article class="book-page book-page-empty">
+              <span class="page-number right-page-number">
+                {rightPhysicalPage}
+              </span>
+            </article>
+          )
+        }
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  .book-spread {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    max-width: 800px;
+    margin-inline: auto;
+    align-items: start;
+  }
+
+  .book-page {
+    box-sizing: border-box;
+    position: relative;
+    min-width: 0;
+    aspect-ratio: 148 / 210;
+    padding: 8mm 7mm 14mm;
+    background: #fffefa;
+    border: 1px solid #e2dfd7;
+    box-shadow: 0 3px 12px rgb(15 23 42 / 5%);
+    font-size: 10pt;
+    line-height: 1.6;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+  }
+
+  .book-page:first-child {
+    border-radius: 3px 0 0 3px;
+  }
+
+  .book-page:last-child {
+    border-radius: 0 3px 3px 0;
+  }
+
+  .book-page :global(img) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .book-page :global(pre) {
+    overflow-x: auto;
+  }
+
+  .page-number {
+    position: absolute;
+    bottom: 4mm;
+    width: auto;
+    margin: 0;
+    color: #94a3b8;
+    font-size: 8pt;
+    line-height: 1;
+  }
+
+  .left-page-number {
+    left: 7mm;
+    right: auto;
+    text-align: left;
+  }
+
+  .right-page-number {
+    right: 7mm;
+    left: auto;
+    text-align: right;
+  }
+
+  .book-page-empty {
+    background: #fffefa;
+  }
+</style>
