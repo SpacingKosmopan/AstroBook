@@ -1,8 +1,4 @@
-
-/* =========================================================
-   PODRĘCZNIK — UKŁAD STRON
-   Plik: src/styles/markdown_book.css
-   ========================================================= */
+/*TODO: napisać dokumentację jakie są dostępne bloki */
 
 :root {
   --book-paper: #fffefa;
@@ -18,10 +14,6 @@
   --book-example-bg: #f0f4fa;
 }
 
-/* =========================================================
-   ROZKŁADÓWKA
-   ========================================================= */
-
 .book-spread {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -31,10 +23,6 @@
   margin-inline: auto;
   align-items: start;
 }
-
-/* =========================================================
-   POJEDYNCZA STRONA
-   ========================================================= */
 
 .book-page {
   box-sizing: border-box;
@@ -56,17 +44,9 @@
   overflow-y: auto;
 }
 
-/* Pusta prawa strona na końcu książki */
-
 .book-page-empty {
   background: #faf9f5;
 }
-
-/* =========================================================
-   TYPOGRAFIA TREŚCI MARKDOWN
-   ========================================================= */
-
-/* Nadpisanie bazowych stylów Tailwind Typography */
 
 .book-page.prose {
   max-width: none;
@@ -134,9 +114,7 @@
   border-top: 1px solid var(--book-border);
 }
 
-/* =========================================================
-   OTWARCIE ROZDZIAŁU
-   ========================================================= */
+/* * chapter * */
 
 .book-page .chapter-opener {
   margin-bottom: 8mm;
@@ -172,8 +150,6 @@
   line-height: 1.6;
 }
 
-/* Zwykły nagłówek H1, poza otwarciem rozdziału */
-
 .book-page h1 {
   margin: 0 0 5mm;
   color: var(--book-heading);
@@ -183,9 +159,7 @@
   line-height: 1.15;
 }
 
-/* =========================================================
-   PODROZDZIAŁY
-   ========================================================= */
+/* * subchapters * */
 
 .book-page h2 {
   margin: 7mm 0 3mm;
@@ -215,9 +189,7 @@
   line-height: 1.35;
 }
 
-/* =========================================================
-   BOX INFORMACYJNY — WSPÓLNE STYLE
-   ========================================================= */
+/* * info block * */
 
 .book-page .textbook-box {
   margin: 5mm 0;
@@ -256,9 +228,7 @@
   text-transform: uppercase;
 }
 
-/* =========================================================
-   DEFINICJA
-   ========================================================= */
+/* * definition * */
 
 .book-page .definition {
   background: var(--book-definition-bg);
@@ -269,9 +239,7 @@
   color: #087e8b;
 }
 
-/* =========================================================
-   CIEKAWOSTKA
-   ========================================================= */
+/* * curious box * */
 
 .book-page .curiosity {
   background: var(--book-curiosity-bg);
@@ -282,9 +250,7 @@
   color: #6950a3;
 }
 
-/* =========================================================
-   ZAPAMIĘTAJ
-   ========================================================= */
+/* * worth remembering * */
 
 .book-page .remember {
   background: var(--book-remember-bg);
@@ -295,9 +261,7 @@
   color: #916515;
 }
 
-/* =========================================================
-   PRZYKŁAD
-   ========================================================= */
+/* * example * */
 
 .book-page .example {
   background: var(--book-example-bg);
@@ -308,9 +272,7 @@
   color: #355f98;
 }
 
-/* =========================================================
-   OBRAZY I PODPISY
-   ========================================================= */
+/* * images, figcaptions * */
 
 .book-page img {
   display: block;
@@ -333,9 +295,7 @@
   text-align: center;
 }
 
-/* =========================================================
-   KOD I WZORY
-   ========================================================= */
+/* * code, formulas * */
 
 .book-page code {
   padding: 0.15em 0.3em;
@@ -363,9 +323,7 @@
   background: transparent;
 }
 
-/* =========================================================
-   TABELE
-   ========================================================= */
+/* * tables * */
 
 .book-page table {
   width: 100%;
@@ -389,9 +347,7 @@
   font-weight: 700;
 }
 
-/* =========================================================
-   NUMERY STRON
-   ========================================================= */
+/* * page number * */
 
 .book-page .page-number {
   position: absolute;
@@ -414,47 +370,4 @@
   right: 7mm;
   left: auto;
   text-align: right;
-}
-
-/* =========================================================
-   RESPONSYWNOŚĆ
-   ========================================================= */
-
-@media (max-width: 700px) {
-  .book-spread {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-    max-width: 420px;
-  }
-
-  .book-page {
-    padding: 8mm 7mm 14mm;
-  }
-
-  .book-page .chapter-opener h1 {
-    font-size: 22pt;
-  }
-
-  .book-page h2 {
-    font-size: 14pt;
-  }
-}
-
-/* =========================================================
-   DRUK
-   ========================================================= */
-
-@media print {
-  .book-spread {
-    max-width: none;
-    gap: 0;
-  }
-
-  .book-page {
-    box-shadow: none;
-    overflow: visible;
-    break-inside: avoid;
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-  }
 }
