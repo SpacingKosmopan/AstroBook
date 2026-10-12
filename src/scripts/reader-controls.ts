@@ -228,11 +228,12 @@ window.addEventListener("resize", () => {
 
 const params = new URLSearchParams(window.location.search);
 const zoomParam = Number(params.get("zoom"));
+const BASE_SCALE = 0.6;
 
 if (params.has("zoom") && Number.isFinite(zoomParam) && zoomParam > 0) {
   scale = clampScale(zoomParam / 100);
 } else {
-  scale = 0.75;
+  scale = BASE_SCALE;
 }
 
 fitMode = false;
