@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 import { Marked } from "marked";
-import "tailwindcss/index.css";
 import "../../../styles/markdown_book.css";
+import "../../../styles/global.css";
 
 export async function getStaticPaths() {
   const books = await getCollection("books");
@@ -86,12 +86,15 @@ for (const page of pageNumbers) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{book.data.title} Str.{currentPage}</title></head
-  >
+    <title>{book.data.title} — str. {currentPage}</title>
+    <script>
+      import "../../../scripts/reader-controls";
+    </script>
+  </head>
 
   <body class="bg-slate-50 text-slate-800 antialiased">
-    <div class="max-w-3xl mx-auto px-4">
-      <header class="mb-5 flex items-center gap-4">
+    <div class="w-full max-w-none mx-auto px-1">
+      <header class="mb-3 flex flex-wrap items-center gap-3">
         <a
           href="/"
           class="shrink-0 rounded border border-slate-300 bg-white
@@ -101,8 +104,8 @@ for (const page of pageNumbers) {
           ← Powrót
         </a>
 
-        <div class="min-w-0">
-          <h1 class="truncate text-lg font-semibold text-slate-800">
+        <div class="min-w-0 flex-1">
+          <h1 class="truncate text-base font-semibold text-slate-800">
             {book.data.title}
           </h1>
 
@@ -114,160 +117,206 @@ for (const page of pageNumbers) {
             )
           }
         </div>
+
+        <div class="reader-toolbar" aria-label="Narzędzia czytnika">
+          <div class="zoom-controls" aria-label="Powiększenie strony">
+            <button type="button" id="zoom-out" aria-label="Pomniejsz">−</button
+            >
+            <output id="zoom-value" aria-live="polite">100%</output>
+            <button type="button" id="zoom-in" aria-label="Powiększ">+</button>
+            <button type="button" id="zoom-reset">Dopasuj</button>
+          </div>
+
+          <button type="button" id="reader-fullscreen"> ⛶ Pełny ekran </button>
+        </div>
+
+        <button
+          class="reader-toc-trigger"
+          id="toc-open"
+          type="button"
+          aria-expanded="false"
+          aria-controls="reader-toc"
+        >
+          <span aria-hidden="true">☰</span>
+          <span>Spis treści</span>
+        </button>
+
+        <div class="reader-toc-backdrop" id="toc-backdrop" hidden>
+          <aside
+            class="reader-toc-panel"
+            id="reader-toc"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Spis treści"
+          >
+            <div class="reader-toc-header">
+              <h2>Spis treści</h2>
+              <button
+                id="toc-close"
+                type="button"
+                aria-label="Zamknij spis treści"
+              >
+                ✕
+              </button>
+            </div>
+
+            <nav aria-label="Rozdziały podręcznika">
+              <ol class="reader-toc-list">
+                {
+                  (book.data.chaptersPages ?? []).map((chapter) => (
+                    <li class="toc-chapter">
+                      <a
+                        href={`/books/${slug}/${chapter.page}`}
+                        aria-current={
+                          currentPage === chapter.page ? "page" : undefined
+                        }
+                      >
+                        <span>{chapter.name}</span>
+                        <span class="toc-page">{chapter.page}</span>
+                      </a>
+
+                      {(chapter.subchapters ?? []).map((subchapter) => (
+                        <div class="toc-subchapter">
+                          <a
+                            href={`/books/${slug}/${subchapter.page}`}
+                            aria-current={
+                              currentPage === subchapter.page
+                                ? "page"
+                                : undefined
+                            }
+                          >
+                            <span>{subchapter.name}</span>
+                            <span class="toc-page">{subchapter.page}</span>
+                          </a>
+                        </div>
+                      ))}
+                    </li>
+                  ))
+                }
+              </ol>
+            </nav>
+          </aside>
+        </div>
       </header>
 
-      <nav
-        aria-label="Nawigacja po stronach"
-        class="mt-3 flex flex-wrap items-center justify-center gap-2 text-sm"
-      >
-        <a
-          href={`/books/${slug}/1`}
-          aria-label="Pierwsza rozkładówka"
-          class="px-1 text-slate-500 hover:text-blue-600">1</a
+      <div class="reader-shell" id="reader-shell">
+        <nav
+          aria-label="Nawigacja po stronach"
+          class="page-navigation flex flex-wrap items-center justify-center gap-2 text-sm"
         >
+          <a
+            href={`/books/${slug}/1`}
+            aria-label="Pierwsza rozkładówka"
+            class="px-1 text-slate-500 hover:text-blue-600">1</a
+          >
 
-        <a
-          href={prevPageUrl ?? "#"}
-          aria-label="Poprzednia rozkładówka"
-          class:list={[
-            "px-1 text-slate-500 hover:text-blue-600",
-            !prevPageUrl && "pointer-events-none opacity-30",
-          ]}>←</a
-        >
+          <a
+            href={prevPageUrl ?? "#"}
+            aria-label="Poprzednia rozkładówka"
+            class:list={[
+              "px-1 text-slate-500 hover:text-blue-600",
+              !prevPageUrl && "pointer-events-none opacity-30",
+            ]}>←</a
+          >
 
-        {
-          paginationItems.map((item) =>
-            item === "..." ? (
-              <span class="text-slate-400">…</span>
-            ) : item === 1 || item === totalPages ? null : (
-              <a
-                href={`/books/${slug}/${item}`}
-                aria-current={item === currentPage ? "page" : undefined}
-                class:list={[
-                  "px-1 text-xs hover:text-blue-600",
-                  item === currentPage
-                    ? "font-bold text-blue-600 underline underline-offset-4"
-                    : "text-slate-600",
-                ]}
-              >
-                {item}
-              </a>
-            ),
-          )
-        }
+          {
+            paginationItems.map((item) =>
+              item === "..." ? (
+                <span class="text-slate-400">…</span>
+              ) : item === 1 || item === totalPages ? null : (
+                <a
+                  href={`/books/${slug}/${item}`}
+                  aria-current={item === currentPage ? "page" : undefined}
+                  class:list={[
+                    "px-1 text-xs hover:text-blue-600",
+                    item === currentPage
+                      ? "font-bold text-blue-600 underline underline-offset-4"
+                      : "text-slate-600",
+                  ]}
+                >
+                  {item}
+                </a>
+              ),
+            )
+          }
 
-        <a
-          href={nextPageUrl ?? "#"}
-          aria-label="Następna rozkładówka"
-          class:list={[
-            "px-1 text-slate-500 hover:text-blue-600",
-            !nextPageUrl && "pointer-events-none opacity-30",
-          ]}>→</a
-        >
+          <a
+            href={nextPageUrl ?? "#"}
+            aria-label="Następna rozkładówka"
+            class:list={[
+              "px-1 text-slate-500 hover:text-blue-600",
+              !nextPageUrl && "pointer-events-none opacity-30",
+            ]}>→</a
+          >
 
-        <a
-          href={`/books/${slug}/${totalPages}`}
-          aria-label="Ostatnia rozkładówka"
-          class="px-1 text-slate-500 hover:text-blue-600">{totalPages}</a
-        >
-      </nav>
+          <a
+            href={`/books/${slug}/${totalPages}`}
+            aria-label="Ostatnia rozkładówka"
+            class="px-1 text-slate-500 hover:text-blue-600">{totalPages}</a
+          >
+        </nav>
 
-      <!-- parsed HTML render -->
+        <div class="reader-viewport" id="reader-viewport">
+          <div class="book-canvas">
+            <main class="book-spread">
+              <article class="book-page prose prose-slate max-w-none">
+                <div set:html={leftHtml} />
+                <footer class="page-number left-page-number">
+                  {leftPhysicalPage}
+                </footer>
+              </article>
 
-      <main class="book-spread mt-5">
-        <article class="book-page prose prose-slate max-w-none">
-          <div set:html={leftHtml} />
-          <footer class="page-number left-page-number">
-            {leftPhysicalPage}
-          </footer>
-        </article>
-
-        {
-          rightHtml !== null ? (
-            <article class="book-page prose prose-slate max-w-none">
-              <div set:html={rightHtml} />
-              <footer class="page-number right-page-number">
-                {rightPhysicalPage}
-              </footer>
-            </article>
-          ) : (
-            <article class="book-page book-page-empty">
-              <span class="page-number right-page-number">
-                {rightPhysicalPage}
-              </span>
-            </article>
-          )
-        }
-      </main>
+              {
+                rightHtml !== null ? (
+                  <article class="book-page prose prose-slate max-w-none">
+                    <div set:html={rightHtml} />
+                    <footer class="page-number right-page-number">
+                      {rightPhysicalPage}
+                    </footer>
+                  </article>
+                ) : (
+                  <article class="book-page book-page-empty">
+                    <span class="page-number right-page-number">
+                      {rightPhysicalPage}
+                    </span>
+                  </article>
+                )
+              }
+            </main>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
+
+  <style>
+    .book-page:first-child {
+      border-radius: 3px 0 0 3px;
+    }
+
+    .book-page:last-child {
+      border-radius: 0 3px 3px 0;
+    }
+
+    .book-page :global(img) {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .book-page :global(pre) {
+      overflow-x: auto;
+    }
+
+    .left-page-number {
+      left: 7mm;
+      right: auto;
+      text-align: left;
+    }
+
+    .right-page-number {
+      right: 7mm;
+      left: auto;
+      text-align: right;
+    }
+  </style>
 </html>
-
-<style>
-  .book-spread {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
-    max-width: 800px;
-    margin-inline: auto;
-    align-items: start;
-  }
-
-  .book-page {
-    box-sizing: border-box;
-    position: relative;
-    min-width: 0;
-    aspect-ratio: 148 / 210;
-    padding: 8mm 7mm 14mm;
-    background: #fffefa;
-    border: 1px solid #e2dfd7;
-    box-shadow: 0 3px 12px rgb(15 23 42 / 5%);
-    font-size: 10pt;
-    line-height: 1.6;
-    overflow-y: auto;
-    overflow-wrap: anywhere;
-  }
-
-  .book-page:first-child {
-    border-radius: 3px 0 0 3px;
-  }
-
-  .book-page:last-child {
-    border-radius: 0 3px 3px 0;
-  }
-
-  .book-page :global(img) {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .book-page :global(pre) {
-    overflow-x: auto;
-  }
-
-  .page-number {
-    position: absolute;
-    bottom: 4mm;
-    width: auto;
-    margin: 0;
-    color: #94a3b8;
-    font-size: 8pt;
-    line-height: 1;
-  }
-
-  .left-page-number {
-    left: 7mm;
-    right: auto;
-    text-align: left;
-  }
-
-  .right-page-number {
-    right: 7mm;
-    left: auto;
-    text-align: right;
-  }
-
-  .book-page-empty {
-    background: #fffefa;
-  }
-</style>

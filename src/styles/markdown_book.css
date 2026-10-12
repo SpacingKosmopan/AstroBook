@@ -1,5 +1,3 @@
-/*TODO: napisać dokumentację jakie są dostępne bloki */
-
 :root {
   --book-paper: #fffefa;
   --book-ink: #263449;
@@ -17,10 +15,10 @@
 .book-spread {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
   width: 100%;
-  max-width: 800px;
+  max-width: 1800px;
   margin-inline: auto;
+  gap: 0;
   align-items: start;
 }
 
@@ -30,18 +28,16 @@
   min-width: 0;
   aspect-ratio: 148 / 210;
   padding: 8mm 7mm 14mm;
-
   background: var(--book-paper);
   border: 1px solid var(--book-border);
-  box-shadow: 0 3px 12px rgb(25 45 72 / 8%);
-
-  color: var(--book-ink);
-  font-family: Georgia, "Times New Roman", serif;
+  box-shadow: 0 3px 12px rgb(15 23 42 / 5%);
   font-size: 10pt;
   line-height: 1.6;
-
-  overflow-wrap: anywhere;
   overflow-y: auto;
+  overflow-wrap: anywhere;
+
+    -webkit-user-select: none;
+  user-select: none;
 }
 
 .book-page-empty {
@@ -116,18 +112,48 @@
 
 /* * chapter * */
 
-.book-page .chapter-opener {
-  margin-bottom: 8mm;
-  padding: 6mm 0 5mm;
-  border-bottom: 2px solid var(--book-accent);
+.book-page:has(.chapter-opener) {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  isolation: isolate;
 }
 
-.book-page .chapter-kicker {
+.book-page .chapter-opener {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 12mm 10mm;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  background-color: #142235;
+  background-image:
+    linear-gradient(
+      0deg,
+      rgb(8 18 32 / 95%) 0%,
+      rgb(8 18 32 / 65%) 38%,
+      rgb(8 18 32 / 5%) 100%
+    ),
+    var(--chapter-image, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border: 0;
+  overflow-wrap: anywhere;
+}
+
+.book-page .chapter-opener .chapter-kicker {
   margin: 0 0 3mm;
-  color: var(--book-accent);
-  font-family: Inter, Arial, sans-serif;
-  font-size: 8pt;
-  font-weight: 800;
+  color: #78dce5;
+  font: 800 8pt Inter, Arial, sans-serif;
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
@@ -136,18 +162,15 @@
   margin: 0 0 4mm;
   padding: 0;
   border: 0;
-  color: var(--book-heading);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 25pt;
-  font-weight: 700;
-  line-height: 1.1;
+  color: #fff;
+  font: 700 30pt/1.1 Georgia, "Times New Roman", serif;
 }
 
-.book-page .chapter-lead {
+.book-page .chapter-opener .chapter-lead {
+  max-width: 90%;
   margin: 0;
-  color: var(--book-muted);
-  font-size: 11pt;
-  line-height: 1.6;
+  color: #e2e8f0;
+  font: 10pt/1.6 Inter, Arial, sans-serif;
 }
 
 .book-page h1 {
@@ -280,6 +303,8 @@
   height: auto;
   margin: 4mm auto;
   border-radius: 1mm;
+
+    -webkit-user-drag: none;
 }
 
 .book-page figure {

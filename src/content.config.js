@@ -15,6 +15,22 @@ const booksCollection = defineCollection({
     bookType: z.string().default("Podręcznik"),
     frontPageImageSrc: z.string().optional(),
     slug: z.string(),
+    chaptersPages: z
+      .array(
+        z.object({
+          name: z.string(),
+          page: z.number().int().positive(),
+          subchapters: z
+            .array(
+              z.object({
+                name: z.string(),
+                page: z.number().int().positive(),
+              }),
+            )
+            .optional(),
+        }),
+      )
+      .optional(),
   }),
 });
 
