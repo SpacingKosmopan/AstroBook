@@ -66,3 +66,7 @@
   <p><strong>Wynik:</strong> około 3,78 · 10¹³ km.</p>
 </div>
 ```
+
+## Highlights
+
+`<span class="highlight">około 8 minut i 20 sekund</span>`
