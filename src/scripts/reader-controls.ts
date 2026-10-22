@@ -172,7 +172,7 @@ zoomReset?.addEventListener("click", () => {
   fitSpread();
 });
 
-/* * DRAGGIN / PAN* */
+/* * DRAGGIN / PAN * */
 if (readerViewport) {
   readerViewport.addEventListener("pointerdown", (event) => {
     if (event.button !== 0) return;
@@ -218,26 +218,97 @@ if (readerViewport) {
 
 /* * RESIZE * */
 
+let resizeFrame = 0;
+
 window.addEventListener("resize", () => {
-  if (fitMode) {
+  if (!fitMode || resizeFrame) return;
+
+  resizeFrame = requestAnimationFrame(() => {
+    resizeFrame = 0;
     fitSpread();
-  }
+  });
 });
 
 /* * START * */
 
 const params = new URLSearchParams(window.location.search);
 const zoomParam = Number(params.get("zoom"));
-const BASE_SCALE = 0.6;
 
-if (params.has("zoom") && Number.isFinite(zoomParam) && zoomParam > 0) {
-  scale = clampScale(zoomParam / 100);
-} else {
-  scale = BASE_SCALE;
-}
-
-fitMode = false;
+const hasValidZoom =
+  params.has("zoom") && Number.isFinite(zoomParam) && zoomParam > 0;
 
 requestAnimationFrame(() => {
-  applyZoom();
+  if (hasValidZoom) {
+    scale = clampScale(zoomParam / 100);
+    fitMode = false;
+    applyZoom();
+  } else {
+    fitSpread();
+  }
 });
+
+/* * SAVE * */
+
+document.addEventListener("click", (event) => {
+  if (!(event.target instanceof Element)) return;
+
+  const link = event.target.closest<HTMLAnchorElement>(
+    ".page-navigation a[href], .side-navigation a[href], .reader-toc-list a[href]",
+  );
+
+  if (!link || event.defaultPrevented) return;
+  if (
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  )
+    return;
+  if (link.target && link.target !== "_self") return;
+
+  const url = new URL(link.href, window.location.href);
+
+  if (url.origin !== window.location.origin) return;
+  if (!url.pathname.startsWith("/books/")) return;
+
+  url.searchParams.set("zoom", String(Math.round(scale * 100)));
+
+  event.preventDefault();
+  window.location.assign(url.href);
+});
+
+/* * FULLSCREEN * */
+const fullscreenButton =
+  document.querySelector<HTMLButtonElement>("#reader-fullscreen");
+
+function updateFullscreenButton(): void {
+  if (!fullscreenButton) return;
+
+  const isFullscreen = document.fullscreenElement !== null;
+
+  fullscreenButton.textContent = isFullscreen
+    ? "✕ Wyjdź z pełnego ekranu"
+    : "⛶ Pełny ekran";
+
+  fullscreenButton.setAttribute(
+    "aria-label",
+    isFullscreen ? "Wyjdź z pełnego ekranu" : "Włącz pełny ekran",
+  );
+}
+
+fullscreenButton?.addEventListener("click", async () => {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (error) {
+    console.error("Nie udało się zmienić trybu pełnoekranowego:", error);
+  }
+});
+
+document.addEventListener("fullscreenchange", updateFullscreenButton);
+
+updateFullscreenButton();

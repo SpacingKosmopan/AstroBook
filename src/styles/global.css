@@ -29,6 +29,7 @@
   z-index: 200;
   inset: 0;
   display: flex;
+  justify-content: flex-end;
   background: rgb(15 23 42 / 50%);
   backdrop-filter: blur(2px);
 }
@@ -40,7 +41,7 @@
   padding: 1.25rem;
   background: #fff;
   color: #172033;
-  box-shadow: 8px 0 30px rgb(0 0 0 / 15%);
+  box-shadow: -8px 0 30px rgb(0 0 0 / 15%);
   animation: toc-slide-in 180ms ease-out;
 }
 
@@ -112,7 +113,7 @@
 
 @keyframes toc-slide-in {
   from {
-    transform: translateX(-12px);
+    transform: translateX(12px);
     opacity: 0;
   }
 

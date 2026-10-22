@@ -29,8 +29,8 @@ export async function getStaticPaths() {
           rightContent: pages[index * 2 + 1] ?? null,
           currentPage,
           totalPages,
-          leftPhysicalPage: index * 2 + 1,
-          rightPhysicalPage: index * 2 + 2,
+          leftPhysicalPage: index * 2,
+          rightPhysicalPage: index * 2 + 1,
         },
       };
     });
@@ -92,7 +92,7 @@ for (const page of pageNumbers) {
 
   <body class="bg-slate-50 text-slate-800 antialiased">
     <div class="w-full max-w-none mx-auto px-1">
-      <header class="mb-3 flex flex-wrap items-center gap-3">
+      <header class="reader-header">
         <a
           href="/"
           class="shrink-0 rounded border border-slate-300 bg-white
@@ -198,60 +198,34 @@ for (const page of pageNumbers) {
       </header>
 
       <div class="reader-shell" id="reader-shell">
-        <nav
-          aria-label="Nawigacja po stronach"
-          class="page-navigation flex flex-wrap items-center justify-center gap-2 text-sm"
-        >
-          <a
-            href={`/books/${slug}/1`}
-            aria-label="Pierwsza rozkładówka"
-            class="px-1 text-slate-500 hover:text-blue-600">1</a
-          >
-
+        <nav class="side-navigation" aria-label="Nawigacja po stronach">
           <a
             href={prevPageUrl ?? "#"}
             aria-label="Poprzednia rozkładówka"
+            title="Poprzednia rozkładówka"
             class:list={[
-              "px-1 text-slate-500 hover:text-blue-600",
-              !prevPageUrl && "pointer-events-none opacity-30",
-            ]}>←</a
+              "side-navigation-button",
+              !prevPageUrl && "is-disabled",
+            ]}
+            aria-disabled={!prevPageUrl ? "true" : undefined}
+            tabindex={!prevPageUrl ? -1 : undefined}
           >
-
-          {
-            paginationItems.map((item) =>
-              item === "..." ? (
-                <span class="text-slate-400">…</span>
-              ) : item === 1 || item === totalPages ? null : (
-                <a
-                  href={`/books/${slug}/${item}`}
-                  aria-current={item === currentPage ? "page" : undefined}
-                  class:list={[
-                    "px-1 text-xs hover:text-blue-600",
-                    item === currentPage
-                      ? "font-bold text-blue-600 underline underline-offset-4"
-                      : "text-slate-600",
-                  ]}
-                >
-                  {item}
-                </a>
-              ),
-            )
-          }
+            <span aria-hidden="true">‹</span>
+          </a>
 
           <a
             href={nextPageUrl ?? "#"}
             aria-label="Następna rozkładówka"
+            title="Następna rozkładówka"
             class:list={[
-              "px-1 text-slate-500 hover:text-blue-600",
-              !nextPageUrl && "pointer-events-none opacity-30",
-            ]}>→</a
+              "side-navigation-button",
+              !nextPageUrl && "is-disabled",
+            ]}
+            aria-disabled={!nextPageUrl ? "true" : undefined}
+            tabindex={!nextPageUrl ? -1 : undefined}
           >
-
-          <a
-            href={`/books/${slug}/${totalPages}`}
-            aria-label="Ostatnia rozkładówka"
-            class="px-1 text-slate-500 hover:text-blue-600">{totalPages}</a
-          >
+            <span aria-hidden="true">›</span>
+          </a>
         </nav>
 
         <div class="reader-viewport" id="reader-viewport">
@@ -260,7 +234,7 @@ for (const page of pageNumbers) {
               <article class="book-page prose prose-slate max-w-none">
                 <div set:html={leftHtml} />
                 <footer class="page-number left-page-number">
-                  {leftPhysicalPage}
+                  {leftPhysicalPage > 0 ? leftPhysicalPage : ""}
                 </footer>
               </article>
 
@@ -269,7 +243,7 @@ for (const page of pageNumbers) {
                   <article class="book-page prose prose-slate max-w-none">
                     <div set:html={rightHtml} />
                     <footer class="page-number right-page-number">
-                      {rightPhysicalPage}
+                      {rightPhysicalPage > 0 ? rightPhysicalPage : ""}
                     </footer>
                   </article>
                 ) : (
@@ -315,6 +289,80 @@ for (const page of pageNumbers) {
       right: 7mm;
       left: auto;
       text-align: right;
+    }
+
+    .reader-shell {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .side-navigation {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-inline: 0;
+      pointer-events: none;
+    }
+
+    .side-navigation-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 76px;
+      border: 1px solid rgb(148 163 184 / 25%);
+      border-radius: 8px;
+      background: rgb(255 255 255 / 88%);
+      color: #475569;
+      font-size: 42px;
+      line-height: 1;
+      text-decoration: none;
+      box-shadow: 0 2px 10px rgb(15 23 42 / 7%);
+      pointer-events: auto;
+      transition:
+        background-color 150ms ease,
+        color 150ms ease,
+        border-color 150ms ease;
+    }
+
+    .side-navigation-button:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: #2563eb;
+    }
+
+    .side-navigation-button:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 3px;
+    }
+
+    .side-navigation-button.is-disabled {
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .reader-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      margin-bottom: 8px;
+    }
+
+    .reader-header > div:nth-child(2) {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reader-header .reader-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
   </style>
 </html>
