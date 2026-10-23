@@ -4,6 +4,14 @@ import { Marked } from "marked";
 import "../../../styles/markdown_book.css";
 import "../../../styles/global.css";
 
+/**
+ * Ta funkcja pobiera wszystkie książki z biblioteki i przerabia je na obiekt {params:{}, props:{}}.
+ *
+ * Params to identyfikacja książka/strona po ścieżce.
+ * Props to cała zawartość książki: podział na strony (lewa i prawa), numeracja stron (pierwsza to okładka, więc widoczny numer 1 będą miały następne) itp.
+ *
+ * Ta nazwa jest **obowiązkowa**
+ */
 export async function getStaticPaths() {
   const books = await getCollection("books");
 
@@ -37,6 +45,9 @@ export async function getStaticPaths() {
   });
 }
 
+/**
+ * Dane przekazane do książki < props="" />
+ */
 const {
   book,
   leftContent,
@@ -47,6 +58,9 @@ const {
   rightPhysicalPage,
 } = Astro.props;
 
+/**
+ * Parametry linku ./?q=
+ */
 const { slug } = Astro.params;
 
 const marked = new Marked();
@@ -59,24 +73,35 @@ const prevPageUrl =
 const nextPageUrl =
   currentPage < totalPages ? `/books/${slug}/${currentPage + 1}` : null;
 
+/**
+ * Ustalenie setu:
+ * - pierwsza strona
+ * - ostatnia strona
+ * - obecna strona
+ * - strona poprzednia
+ * - strona nastepna
+ */
 const pageNumbers = Array.from(
   new Set(
+    // nie pozwala na duplikaty. będać na drugiej - pierwsza i poprzednia to te same
     [1, totalPages, currentPage - 1, currentPage, currentPage + 1].filter(
-      (page) => page >= 1 && page <= totalPages,
+      (page) => page >= 1 && page <= totalPages, // pozbycie się stron wychodzących poza zakres
     ),
   ),
 ).sort((a, b) => a - b);
 
+/**
+ * Przedmioty paginacji (wyżej wymienione) w formie liczby lub stringa "..." (międzystrony, do których obecnie nie można przejść)
+ */
 const paginationItems: (number | "...")[] = [];
-
 for (const page of pageNumbers) {
   const previous = paginationItems[paginationItems.length - 1];
 
   if (typeof previous === "number" && page - previous > 1) {
-    paginationItems.push("...");
+    paginationItems.push("..."); // wstawienie międzystrony
   }
 
-  paginationItems.push(page);
+  paginationItems.push(page); // wstawienie stron i "..." do padinationItems
 }
 ---
 
@@ -199,6 +224,7 @@ for (const page of pageNumbers) {
 
       <div class="reader-shell" id="reader-shell">
         <nav class="side-navigation" aria-label="Nawigacja po stronach">
+          <!-- lewy przycisk po boku -->
           <a
             href={prevPageUrl ?? "#"}
             aria-label="Poprzednia rozkładówka"
@@ -213,6 +239,7 @@ for (const page of pageNumbers) {
             <span aria-hidden="true">‹</span>
           </a>
 
+          <!-- prawy przycisk po boku -->
           <a
             href={nextPageUrl ?? "#"}
             aria-label="Następna rozkładówka"

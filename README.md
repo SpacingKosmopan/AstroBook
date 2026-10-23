@@ -70,3 +70,72 @@
 ## Highlights
 
 `<span class="highlight">około 8 minut i 20 sekund</span>`
+
+# Dokumentacja Prawidłowa
+
+## 1. Wczytywanie treści podręcznika
+
+Treści wszystkich podręczników są zapisane w folderze `content\books\` w formacie `.mdx`. Złożone są z dwóch elementów:
+
+### 1.1. Dane
+
+Zapisane w `booksCollection`:
+
+```javascript
+const booksCollection = defineCollection({
+  loader: glob({
+    pattern: "**/[^_]*.{md,mdx}",
+    base: "./src/content/books",
+  }),
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string().optional(),
+    subject: z.string(),
+    grade: z.string(),
+    bookType: z.string().default("Podręcznik"),
+    frontPageImageSrc: z.string().optional(),
+    slug: z.string(),
+    chaptersPages: z
+      .array(
+        z.object({
+          name: z.string(),
+          page: z.number().int().positive(),
+          subchapters: z
+            .array(
+              z.object({
+                name: z.string(),
+                page: z.number().int().positive(),
+              }),
+            )
+            .optional(),
+        }),
+      )
+      .optional(),
+  }),
+});
+```
+
+Przykład użycia:
+
+```javascript
+title: "Astronomia: Światła Wszechświata"
+subtitle: "Gwiazdy, Galaktyki i Wszechświat"
+subject: "Astronomia"
+grade: "3"
+bookType: "Podręcznik"
+frontPageImageSrc: "https://www.nasa.gov/wp-content/uploads/2015/10/oct_1_2015_flare.jpg"
+slug: "astronomia-swiatla-wszechswiata-3"
+
+chaptersPages:
+  - name: "Słońce i podstawy fizyki gwiazd"
+    page: 1
+    subchapters:
+      - name: "2.1. Słońce - nasza najbliższa gwiazda"
+        page: 2
+```
+
+### 1.2. Kontent
+
+Zapisany w postaci MarkDown + HTML. Treść dzieli się na strony **ręcznie** za pomocą separatorów `---`.
+
+**Ważna uwaga**: początkowy blok otoczony musi być `--- ---`. Te dwa separatory **nie dzielą** stron. Dopiero następne są wczytywane i wykorzystywane przez kod.

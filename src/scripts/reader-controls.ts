@@ -1,5 +1,6 @@
 // * SPIS TREŚCI * //
 
+// table of contents
 const openButton = document.querySelector<HTMLButtonElement>("#toc-open");
 const closeButton = document.querySelector<HTMLButtonElement>("#toc-close");
 const backdrop = document.querySelector<HTMLElement>("#toc-backdrop");
